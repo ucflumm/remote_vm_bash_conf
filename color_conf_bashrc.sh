@@ -46,8 +46,15 @@ mv "$tmp" "$BASHRC"
 cat >> "$BASHRC" <<'EOF'
 # >>> POWERLINE_PROMPT_MANAGED (do not edit)
 
-# Terminal capabilities
-export TERM=xterm-256color
+# Terminal capabilities:
+# Don't override TERM inside tmux; tmux sets TERM correctly (e.g. tmux-256color)
+if [ -z "${TMUX-}" ]; then
+  # Outside tmux, also avoid forcing TERM unless you have a specific reason.
+  # If you *really* want to force it, uncomment the next line:
+  # export TERM=xterm-256color
+  :
+fi
+
 
 # Truncate long paths: …/last/dirs
 PROMPT_DIRTRIM=3
