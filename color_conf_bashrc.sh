@@ -90,30 +90,24 @@ SEP_GB='\[\e[97;42;44m\]'
 SEP_RB='\[\e[97;41;44m\]'
 SEP_BD='\[\e[97;44;49m\]'
 
-# ----- Git segment (raw ANSI, no \[ \]) -----
+# ----- Git segment: text only, no ANSI escapes -----
 git_segment() {
   git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return
 
   local branch
   branch=$(__git_ps1 "%s" 2>/dev/null) || return
 
-  if git diff --quiet 2>/dev/null && git diff --cached --quiet 2>/dev/null; then
-    # clean repo → green
-    printf '\e[97;42m  %s \e[0m' "$branch"
-  else
-    # dirty repo → yellow
-    printf '\e[30;43m  %s \e[0m' "$branch"
-  fi
+  printf '  %s ' "$branch"
 }
 
 # ----- Prompt definition -----
 if [ "$EUID" -eq 0 ]; then
   PS1="${U_RED} root ${SEP_RB}${H_BLU} \h ${SEP_BD}${P_BLU} \w "
-  PS1+='$(git_segment)'
+  PS1+="\[\e[97;42m\]\$(git_segment)\[\e[0m\]"
   PS1+="${RST}# "
 else
   PS1="${U_GRN} \u ${SEP_GB}${H_BLU} \h ${SEP_BD}${P_BLU} \w "
-  PS1+='$(git_segment)'
+  PS1+="\[\e[97;42m\]\$(git_segment)\[\e[0m\]"
   PS1+="${RST}\$ "
 fi
 
